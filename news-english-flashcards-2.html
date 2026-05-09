@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ニュース英語 単語帳 — BBC・Bloomberg 頻出100語</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f9f8f5;
+    --surface: #ffffff;
+    --surface2: #f1efe8;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --text: #1a1917;
+    --muted: #6b6a66;
+    --hint: #9e9d99;
+    --purple-bg: #EEEDFE; --purple-mid: #7F77DD; --purple-dark: #3C3489;
+    --teal-bg: #E1F5EE;   --teal-mid: #1D9E75;   --teal-dark: #085041;
+    --coral-bg: #FAECE7;  --coral-mid: #D85A30;   --coral-dark: #712B13;
+    --blue-bg: #E6F1FB;   --blue-mid: #378ADD;    --blue-dark: #0C447C;
+    --amber-bg: #FAEEDA;  --amber-mid: #BA7517;   --amber-dark: #633806;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --card-h: 280px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1917;
+      --surface: #242320;
+      --surface2: #2c2c2a;
+      --border: rgba(255,255,255,0.10);
+      --border2: rgba(255,255,255,0.20);
+      --text: #f0ede8;
+      --muted: #a09f9b;
+      --hint: #6b6a66;
+      --purple-bg: #26215C; --purple-dark: #CECBF6;
+      --teal-bg: #04342C;   --teal-dark: #9FE1CB;
+      --coral-bg: #4A1B0C;  --coral-dark: #F5C4B3;
+      --blue-bg: #042C53;   --blue-dark: #B5D4F4;
+      --amber-bg: #412402;  --amber-dark: #FAC775;
+    }
+  }
+
+  body {
+    font-family: 'Georgia', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  header { margin-bottom: 2rem; }
+  header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  header p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+  .stat {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-n {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: system-ui, sans-serif;
+  }
+  .stat-n.green { color: var(--teal-mid); }
+  .stat-n.red   { color: var(--coral-mid); }
+  .stat-l {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+  .filter-btn {
+    font-size: 12px;
+    font-family: system-ui, sans-serif;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border2);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .filter-btn:hover { background: var(--surface2); color: var(--text); }
+  .filter-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--border2);
+    font-weight: 600;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 140px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-family: system-ui, sans-serif;
+    outline: none;
+  }
+  .search-box:focus { border-color: var(--purple-mid); }
+
+  /* Progress */
+  .progress-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: system-ui, sans-serif;
+    margin-bottom: 6px;
+  }
+  .progress-line b { color: var(--text); }
+  .bar-track {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--purple-mid);
+    border-radius: 2px;
+    transition: width 0.35s ease;
+  }
+
+  /* Card */
+  .card-area { perspective: 1200px; margin-bottom: 1rem; }
+  .card {
+    width: 100%;
+    height: var(--card-h);
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.46s cubic-bezier(0.4,0.2,0.2,1);
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  .back-face {
+    transform: rotateY(180deg);
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    padding: 1.75rem;
+    overflow-y: auto;
+  }
+
+  /* Badge */
+  .badge {
+    font-size: 11px;
+    font-family: system-ui, sans-serif;
+    font-weight: 600;
+    padding: 3px 11px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    display: inline-block;
+  }
+  .cat-politics { background: var(--purple-bg); color: var(--purple-dark); }
+  .cat-economy  { background: var(--teal-bg);   color: var(--teal-dark);   }
+  .cat-business { background: var(--blue-bg);   color: var(--blue-dark);   }
+  .cat-society  { background: var(--coral-bg);  color: var(--coral-dark);  }
+  .cat-idiom    { background: var(--amber-bg);  color: var(--amber-dark);  }
+
+  .word-en {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    font-family: 'Georgia', serif;
+  }
+  .word-pron {
+    font-size: 15px;
+    color: var(--muted);
+    font-style: italic;
+    font-family: system-ui, sans-serif;
+  }
+  .tap-hint {
+    font-size: 12px;
+    color: var(--hint);
+    margin-top: 18px;
+    font-family: system-ui, sans-serif;
+  }
+
+  .back-word {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+    font-family: 'Georgia', serif;
+  }
+  .back-pron {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    font-family: system-ui, sans-serif;
+    margin-bottom: 10px;
+  }
+  .back-jp {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--purple-mid);
+    margin-bottom: 12px;
+    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  }
+  .back-def {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-family: system-ui, sans-serif;
+    margin-bottom: 12px;
+  }
+  .back-ex {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+    font-style: italic;
+    font-family: 'Georgia', serif;
+    border-left: 2.5px solid var(--purple-mid);
+    padding-left: 12px;
+  }
+
+  /* Navigation */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+  .nav-btn {
+    padding: 9px 22px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    font-family: system-ui, sans-serif;
+    transition: background 0.12s;
+  }
+  .nav-btn:hover:not(:disabled) { background: var(--surface2); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .mark-btns { display: flex; gap: 8px; }
+  .btn-know {
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--teal-bg);
+    color: var(--teal-dark);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: system-ui, sans-serif;
+    transition: opacity 0.12s;
+  }
+  .btn-again {
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--coral-bg);
+    color: var(--coral-dark);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: system-ui, sans-serif;
+    transition: opacity 0.12s;
+  }
+  .btn-know:hover, .btn-again:hover { opacity: 0.8; }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 3rem;
+    font-family: system-ui, sans-serif;
+  }
+
+  footer {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--hint);
+    font-family: system-ui, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>📰 ニュース英語 単語帳</h1>
+    <p>BBC・Bloomberg・Reuters 頻出 100語 — カードをタップして意味を確認</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="s-total">100</div><div class="stat-l">総単語数</div></div>
+    <div class="stat"><div class="stat-n green" id="s-know">0</div><div class="stat-l">覚えた</div></div>
+    <div class="stat"><div class="stat-n red" id="s-again">0</div><div class="stat-l">要復習</div></div>
+    <div class="stat"><div class="stat-n" id="s-left">100</div><div class="stat-l">残り</div></div>
+  </div>
+
+  <div class="controls">
+    <button class="filter-btn active" onclick="setFilter('all',this)">すべて</button>
+    <button class="filter-btn" onclick="setFilter('politics',this)">政治</button>
+    <button class="filter-btn" onclick="setFilter('economy',this)">経済</button>
+    <button class="filter-btn" onclick="setFilter('business',this)">ビジネス</button>
+    <button class="filter-btn" onclick="setFilter('society',this)">社会</button>
+    <button class="filter-btn" onclick="setFilter('idiom',this)">イディオム</button>
+    <input class="search-box" type="text" placeholder="🔍 単語・日本語で検索…" oninput="doSearch(this.value)" />
+  </div>
+
+  <div class="progress-line">
+    <span><b id="prog-cur">1</b> / <b id="prog-tot">100</b></span>
+    <span id="prog-pct">1%</span>
+  </div>
+  <div class="bar-track"><div class="bar-fill" id="bar" style="width:1%"></div></div>
+
+  <div class="card-area" id="card-area">
+    <div class="card" id="card" onclick="flipCard()">
+      <div class="face" id="front-face"></div>
+      <div class="face back-face" id="back-face"></div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)">← 前へ</button>
+    <div class="mark-btns" id="mark-btns" style="display:none">
+      <button class="btn-know" onclick="mark('know')">✓ 覚えた</button>
+      <button class="btn-again" onclick="mark('again')">↺ もう一度</button>
+    </div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">次へ →</button>
+  </div>
+
+  <footer>キーボード: ← → で移動 / スペースでカードをめくる</footer>
+</div>
+
+<script>
+const ALL = [
+  {w:"sanctions",p:"/ˈsæŋkʃənz/",jp:"制裁",cat:"politics",def:"国家や組織に対して課される経済的・外交的罰則措置。BBCやBloombergで地政学ニュースの核心語。",ex:"The EU imposed sweeping sanctions on Russia following the invasion."},
+  {w:"ceasefire",p:"/ˈsiːsfaɪər/",jp:"停戦",cat:"politics",def:"交戦国・勢力間で合意された戦闘の一時停止。紛争報道の定番語。",ex:"Both sides agreed to a 72-hour ceasefire to allow aid deliveries."},
+  {w:"coalition",p:"/ˌkəʊəˈlɪʃən/",jp:"連立・連合",cat:"politics",def:"共通の目標のために複数の政党・国家・組織が結成する同盟。",ex:"A broad coalition of opposition parties voted against the bill."},
+  {w:"referendum",p:"/ˌrefəˈrendəm/",jp:"国民投票",cat:"politics",def:"重要な政治的問題について国民が直接投票する制度。",ex:"Scotland could hold a second referendum on independence."},
+  {w:"incumbent",p:"/ɪnˈkʌmbənt/",jp:"現職の",cat:"politics",def:"現在その地位・役職に就いている人物を指す形容詞・名詞。",ex:"The incumbent president won re-election by a narrow margin."},
+  {w:"sovereignty",p:"/ˈsɒvrənti/",jp:"主権",cat:"politics",def:"国家が自国の統治について持つ最高権力・独立性。",ex:"The deal was criticized as an infringement on national sovereignty."},
+  {w:"veto",p:"/ˈviːtəʊ/",jp:"拒否権",cat:"politics",def:"議会や国際機関の決定を阻止できる権限。",ex:"Russia used its veto to block the UN Security Council resolution."},
+  {w:"bilateral",p:"/ˌbaɪˈlætərəl/",jp:"二国間の",cat:"politics",def:"二つの国・当事者の間で行われる関係・交渉・協定。",ex:"The two leaders held bilateral talks on trade and security."},
+  {w:"geopolitical",p:"/ˌdʒiːəʊpəˈlɪtɪkəl/",jp:"地政学的な",cat:"politics",def:"地理的条件と政治・国際関係の相互作用に関する形容詞。",ex:"Geopolitical tensions are weighing on investor confidence."},
+  {w:"authoritarian",p:"/ɔːˌθɒrɪˈteəriən/",jp:"権威主義的な",cat:"politics",def:"個人の自由を制限し、強力な中央集権的支配を行う政治体制・指導者を指す。",ex:"Critics say the new law gives the government authoritarian powers."},
+  {w:"GDP",p:"/ˌdʒiː diː ˈpiː/",jp:"国内総生産",cat:"economy",def:"Gross Domestic Product。一国の経済規模を示す最重要指標。",ex:"GDP growth slowed to 1.2% in the third quarter."},
+  {w:"inflation",p:"/ɪnˈfleɪʃən/",jp:"インフレ・物価上昇",cat:"economy",def:"物価が持続的に上昇し、通貨の購買力が低下する経済現象。",ex:"Inflation hit a 40-year high, squeezing household budgets."},
+  {w:"recession",p:"/rɪˈseʃən/",jp:"景気後退",cat:"economy",def:"一般的にGDPが2四半期連続でマイナス成長となる状態。",ex:"Economists warn the country could slip into recession next year."},
+  {w:"interest rate",p:"/ˈɪntrəst reɪt/",jp:"金利",cat:"economy",def:"中央銀行が設定する政策金利。借入コストや経済全体に影響する。",ex:"The Fed raised interest rates for the third consecutive meeting."},
+  {w:"fiscal",p:"/ˈfɪskəl/",jp:"財政の",cat:"economy",def:"政府の歳入・歳出・予算に関する形容詞。",ex:"The government announced a new fiscal stimulus package."},
+  {w:"monetary policy",p:"/ˈmʌnɪtri ˈpɒlɪsi/",jp:"金融政策",cat:"economy",def:"中央銀行が金利や通貨供給量を操作して経済を調整する政策。",ex:"The ECB is set to tighten monetary policy to curb inflation."},
+  {w:"austerity",p:"/ɒˈsterɪti/",jp:"緊縮財政",cat:"economy",def:"政府支出削減・増税などで財政赤字を縮小しようとする政策。",ex:"Years of austerity left public services severely underfunded."},
+  {w:"yield",p:"/jiːld/",jp:"利回り・収益率",cat:"economy",def:"債券や投資の収益率。市場センチメントの指標として頻出。",ex:"Government bond yields rose sharply on inflation concerns."},
+  {w:"deficit",p:"/ˈdefɪsɪt/",jp:"赤字・不足",cat:"economy",def:"支出が収入を上回る状態。貿易赤字・財政赤字など広く使われる。",ex:"The trade deficit widened to a record high last month."},
+  {w:"surplus",p:"/ˈsɜːpləs/",jp:"黒字・余剰",cat:"economy",def:"収入が支出を上回る状態。deficitの反対語。",ex:"Germany reported a record current account surplus."},
+  {w:"tariff",p:"/ˈtærɪf/",jp:"関税",cat:"economy",def:"輸入品に課される税金。貿易摩擦ニュースの核心語。",ex:"The US imposed 25% tariffs on steel and aluminium imports."},
+  {w:"supply chain",p:"/səˈplaɪ tʃeɪn/",jp:"サプライチェーン",cat:"economy",def:"原材料から最終製品が消費者に届くまでの生産・流通全体の連鎖。",ex:"The pandemic exposed vulnerabilities in global supply chains."},
+  {w:"commodity",p:"/kəˈmɒdɪti/",jp:"商品・原材料",cat:"economy",def:"石油・金・農産物など市場で取引される基礎的な原材料・製品。",ex:"Commodity prices surged amid supply disruptions."},
+  {w:"benchmark",p:"/ˈbentʃmɑːk/",jp:"基準・指標",cat:"economy",def:"比較・評価の基準となる指数や価格。Brent原油やS&P500など。",ex:"Brent crude is the global benchmark for oil prices."},
+  {w:"quantitative easing",p:"/ˌkwɒntɪtətɪv ˈiːzɪŋ/",jp:"量的緩和",cat:"economy",def:"中央銀行が国債などを購入して市場に資金を供給する金融政策。QEとも。",ex:"The central bank launched a fresh round of quantitative easing."},
+  {w:"default",p:"/dɪˈfɔːlt/",jp:"債務不履行",cat:"economy",def:"借り手が債務の返済義務を果たせなくなること。",ex:"Sri Lanka declared a sovereign default on its foreign debt."},
+  {w:"stagnation",p:"/stæɡˈneɪʃən/",jp:"停滞・スタグネーション",cat:"economy",def:"経済成長が止まりほぼゼロに近い状態が続くこと。",ex:"Japan has struggled with decades of economic stagnation."},
+  {w:"subsidy",p:"/ˈsʌbsɪdi/",jp:"補助金",cat:"economy",def:"政府が産業・個人を支援するために支給する資金援助。",ex:"The EU launched an investigation into Chinese EV subsidies."},
+  {w:"trajectory",p:"/trəˈdʒektəri/",jp:"軌跡・推移",cat:"economy",def:"物事の変化や進展の方向・経路。経済指標の動向を表すのに頻用される。",ex:"The inflation trajectory remains uncertain, the Fed warned."},
+  {w:"divergence",p:"/daɪˈvɜːdʒəns/",jp:"乖離・分岐",cat:"economy",def:"二つ以上のものが異なる方向に進むこと。各国の金利政策差異などで使われる。",ex:"The divergence in monetary policy between the US and EU widened."},
+  {w:"IPO",p:"/ˌaɪ piː ˈəʊ/",jp:"新規株式公開",cat:"business",def:"Initial Public Offering。企業が初めて株式を一般市場に公開すること。",ex:"The tech giant raised $2 billion in its long-awaited IPO."},
+  {w:"merger",p:"/ˈmɜːdʒər/",jp:"合併",cat:"business",def:"二つ以上の企業が一つに統合されること。M&Aニュースの基本語。",ex:"The proposed merger was blocked by antitrust regulators."},
+  {w:"acquisition",p:"/ˌækwɪˈzɪʃən/",jp:"買収",cat:"business",def:"ある企業が別の企業を購入・支配下に置くこと。",ex:"Microsoft completed its $69 billion acquisition of Activision."},
+  {w:"revenue",p:"/ˈrevənjuː/",jp:"収益・売上高",cat:"business",def:"企業が事業活動で得る総収入。利益（profit）とは異なる。",ex:"The company's quarterly revenue beat analyst expectations."},
+  {w:"earnings",p:"/ˈɜːnɪŋz/",jp:"利益・収益",cat:"business",def:"企業の純利益。決算発表ニュースで頻出。earnings per share (EPS)も重要。",ex:"Apple's earnings fell short of Wall Street forecasts."},
+  {w:"stake",p:"/steɪk/",jp:"出資比率・持ち分",cat:"business",def:"企業の所有権の一部。a stake in a companyで「〜社の株式を保有する」。",ex:"SoftBank sold its remaining stake in Alibaba."},
+  {w:"valuation",p:"/ˌvæljuˈeɪʃən/",jp:"企業評価額",cat:"business",def:"企業や資産の市場での価値の推定額。",ex:"The startup's valuation doubled to $10 billion after the funding round."},
+  {w:"hedge fund",p:"/ˈhedʒ fʌnd/",jp:"ヘッジファンド",cat:"business",def:"富裕な投資家から資金を集め、様々な戦略でリターンを追求する投資ファンド。",ex:"A prominent hedge fund disclosed a large short position in the stock."},
+  {w:"dividend",p:"/ˈdɪvɪdend/",jp:"配当金",cat:"business",def:"企業が株主に分配する利益の一部。",ex:"The bank raised its dividend for the fifth consecutive year."},
+  {w:"liability",p:"/ˌlaɪəˈbɪlɪti/",jp:"負債・責任",cat:"business",def:"企業や個人が負う財務的義務・法的責任。",ex:"The company faces significant liabilities from the lawsuit."},
+  {w:"restructuring",p:"/ˌriːˈstrʌktʃərɪŋ/",jp:"リストラ・事業再編",cat:"business",def:"企業が効率化・コスト削減のために組織や事業を再編すること。",ex:"The airline announced a major restructuring, cutting 3,000 jobs."},
+  {w:"volatility",p:"/ˌvɒləˈtɪlɪti/",jp:"変動性・ボラティリティ",cat:"business",def:"市場価格の激しい上下変動の度合い。",ex:"Market volatility surged after the surprise rate decision."},
+  {w:"AI",p:"/ˌeɪ ˈaɪ/",jp:"人工知能",cat:"business",def:"Artificial Intelligence。機械が人間のような知性を模倣する技術。現代最頻出語の一つ。",ex:"Companies are racing to integrate AI into their products."},
+  {w:"regulatory",p:"/ˈreɡjʊlətri/",jp:"規制の",cat:"business",def:"法律・規則・基準に関する。regulatory frameworkで「規制の枠組み」。",ex:"The tech sector faces increasing regulatory scrutiny worldwide."},
+  {w:"antitrust",p:"/ˌæntiˈtrʌst/",jp:"独占禁止",cat:"business",def:"市場の独占や競争阻害を防ぐための法律・政策。",ex:"Google faces antitrust lawsuits in multiple jurisdictions."},
+  {w:"cybersecurity",p:"/ˌsaɪbəsɪˈkjʊərɪti/",jp:"サイバーセキュリティ",cat:"business",def:"コンピューターシステム・ネットワークへの不正アクセスや攻撃からの保護。",ex:"The attack highlighted major cybersecurity vulnerabilities."},
+  {w:"algorithm",p:"/ˈælɡərɪðəm/",jp:"アルゴリズム",cat:"business",def:"問題解決のための手順や計算の集合。SNSやAIの文脈で頻出。",ex:"Critics say the algorithm amplifies divisive content."},
+  {w:"bear market",p:"/ˈbeər ˌmɑːkɪt/",jp:"弱気相場",cat:"business",def:"株価が20%以上下落した状態の市場。反対はbull market（強気相場）。",ex:"Investors braced for a prolonged bear market amid rising rates."},
+  {w:"bull market",p:"/ˈbʊl ˌmɑːkɪt/",jp:"強気相場",cat:"business",def:"株価が持続的に上昇している市場の状態。",ex:"The decade-long bull market came to an abrupt end."},
+  {w:"transparency",p:"/trænsˈpærənsi/",jp:"透明性",cat:"society",def:"情報・意思決定過程が公開・理解可能な状態。政治・企業報道で頻出。",ex:"Campaigners called for greater transparency in political donations."},
+  {w:"inequality",p:"/ˌɪnɪˈkwɒlɪti/",jp:"不平等",cat:"society",def:"富・機会・権利などの分配における格差。",ex:"The pandemic deepened existing inequalities in health and income."},
+  {w:"migration",p:"/maɪˈɡreɪʃən/",jp:"移住・移民",cat:"society",def:"人々が国境を越えて移動すること。難民・不法移民問題でも使われる。",ex:"Migration has become one of the most divisive political issues."},
+  {w:"asylum seeker",p:"/əˈsaɪləm ˌsiːkər/",jp:"亡命希望者",cat:"society",def:"迫害を逃れて他国に庇護（国際保護）を求める人。",ex:"The government plans to fast-track asylum seeker applications."},
+  {w:"disinformation",p:"/ˌdɪsɪnfəˈmeɪʃən/",jp:"偽情報",cat:"society",def:"故意に作られた虚偽の情報。misinformation（意図しない誤情報）と区別される。",ex:"Social media platforms are struggling to combat disinformation."},
+  {w:"pandemic",p:"/pænˈdemɪk/",jp:"パンデミック・世界的流行",cat:"society",def:"感染症が世界的規模で広がること。epidemicは特定地域内。",ex:"The WHO declared the outbreak a pandemic in March 2020."},
+  {w:"climate change",p:"/ˈklaɪmɪt tʃeɪndʒ/",jp:"気候変動",cat:"society",def:"人間活動による長期的な地球の気候パターンの変化。",ex:"World leaders gathered to accelerate action on climate change."},
+  {w:"carbon neutral",p:"/ˈkɑːbən ˈnjuːtrəl/",jp:"カーボンニュートラル",cat:"society",def:"排出するCO₂量と吸収・除去量が等しい状態。",ex:"The company pledged to become carbon neutral by 2035."},
+  {w:"accountability",p:"/əˌkaʊntəˈbɪlɪti/",jp:"説明責任",cat:"society",def:"行動・決定に対して責任を負い、説明する義務。",ex:"Protesters demanded accountability for the police shooting."},
+  {w:"whistleblower",p:"/ˈwɪsəlˌbləʊər/",jp:"内部告発者",cat:"society",def:"組織内の不正行為を外部に暴露する人物。",ex:"The whistleblower provided documents to investigative journalists."},
+  {w:"surveillance",p:"/səˈveɪləns/",jp:"監視",cat:"society",def:"個人・集団の行動を監視・追跡すること。政府や企業による監視が問題に。",ex:"The leaked files revealed mass surveillance of ordinary citizens."},
+  {w:"infrastructure",p:"/ˈɪnfrəˌstrʌktʃər/",jp:"インフラ",cat:"society",def:"道路・橋・電力・通信など社会の基盤となる施設・設備の総称。",ex:"The government announced a $1 trillion infrastructure bill."},
+  {w:"rollout",p:"/ˈrəʊlaʊt/",jp:"展開・導入",cat:"society",def:"新製品・政策・サービスを段階的に広く普及させること。",ex:"The vaccine rollout has been slower than expected."},
+  {w:"deforestation",p:"/ˌdiːˌfɒrɪˈsteɪʃən/",jp:"森林破壊",cat:"society",def:"木材採取・農地開発などによる森林の消失。環境ニュースの頻出語。",ex:"Brazil pledged to end deforestation by 2030."},
+  {w:"net zero",p:"/ˌnet ˈzɪərəʊ/",jp:"ネットゼロ排出",cat:"society",def:"温室効果ガスの排出量と吸収量を均衡させ、実質ゼロにすること。",ex:"The UK became the first major economy to enshrine net zero in law."},
+  {w:"humanitarian",p:"/hjuːˌmænɪˈteəriən/",jp:"人道的な",cat:"society",def:"人命救助・苦難軽減を目的とした活動・援助に関する形容詞。",ex:"The UN called for a humanitarian corridor to deliver aid."},
+  {w:"escalate",p:"/ˈeskəleɪt/",jp:"激化する・拡大する",cat:"politics",def:"状況・紛争・問題がより深刻・大規模になること。",ex:"Fears grew that the conflict could escalate into a wider war."},
+  {w:"alleviate",p:"/əˈliːvieɪt/",jp:"緩和する・軽減する",cat:"society",def:"苦しみ・問題・困難を軽くすること。",ex:"Aid agencies are working to alleviate the humanitarian crisis."},
+  {w:"unprecedented",p:"/ʌnˈpresɪdentɪd/",jp:"前例のない",cat:"politics",def:"これまでに起きたことのない、歴史上初めての事態を表す語。ニュースで多用される。",ex:"The bank implemented unprecedented measures to stabilise markets."},
+  {w:"bipartisan",p:"/ˌbaɪˈpɑːtɪzən/",jp:"超党派の",cat:"politics",def:"政党の違いを超えて複数の政党が協力すること。",ex:"The bill passed with rare bipartisan support in Congress."},
+  {w:"caucus",p:"/ˈkɔːkəs/",jp:"幹部会・議員団",cat:"politics",def:"特定の政治的立場を共有する議員グループ、または予備選挙の一形式。",ex:"The Progressive Caucus threatened to vote against the deal."},
+  {w:"sanctions relief",p:"/ˈsæŋkʃənz rɪˌliːf/",jp:"制裁緩和",cat:"politics",def:"交渉や条件達成と引き換えに経済制裁を一部または全部解除すること。",ex:"Iran demanded sanctions relief before resuming nuclear talks."},
+  {w:"crackdown",p:"/ˈkrækdaʊn/",jp:"取り締まり強化",cat:"politics",def:"政府・当局が法律違反や不正行為に対して厳しい措置を取ること。",ex:"Beijing launched a sweeping crackdown on private tutoring companies."},
+  {w:"deadlock",p:"/ˈdedlɒk/",jp:"行き詰まり・膠着状態",cat:"politics",def:"交渉・議会などで双方が譲らず進展しない状態。",ex:"Peace talks collapsed after negotiators reached a deadlock."},
+  {w:"turmoil",p:"/ˈtɜːmɔɪl/",jp:"混乱・動乱",cat:"politics",def:"政治・経済・社会における激しい混乱や不安定な状態。",ex:"Financial markets were thrown into turmoil by the shock announcement."},
+  {w:"exemption",p:"/ɪɡˈzempʃən/",jp:"免除・例外",cat:"politics",def:"規則・義務・税金などから除外されること。",ex:"Small businesses received an exemption from the new regulations."},
+  {w:"endorsement",p:"/ɪnˈdɔːsmənt/",jp:"支持・推薦",cat:"politics",def:"候補者・政策・製品などを公式に支持・推薦すること。",ex:"The union's endorsement proved crucial in the election."},
+  {w:"de facto",p:"/ˌdeɪ ˈfæktəʊ/",jp:"事実上の",cat:"politics",def:"法的には認められていないが、実質的・現実的にそうである状態を表すラテン語由来の表現。",ex:"The military leader became the de facto ruler of the country."},
+  {w:"loophole",p:"/ˈluːphəʊl/",jp:"抜け穴・盲点",cat:"politics",def:"法律・規制の曖昧な部分や欠陥を利用して義務を回避できる手段。",ex:"Tech giants exploit tax loopholes to minimise their bills."},
+  {w:"tipping point",p:"/ˈtɪpɪŋ pɔɪnt/",jp:"転換点・臨界点",cat:"idiom",def:"小さな変化が大きな不可逆的変化を引き起こす分岐点。気候・社会変化で頻出。",ex:"Scientists warn we are approaching a tipping point for climate change."},
+  {w:"on the back of",p:"/ɒn ðə bæk ɒv/",jp:"〜を背景に・〜に乗じて",cat:"idiom",def:"ある好条件・出来事を追い風として。Bloombergで業績好調の背景説明に多用。",ex:"Shares rose on the back of stronger-than-expected earnings."},
+  {w:"in the pipeline",p:"/ɪn ðə ˈpaɪplaɪn/",jp:"計画中・準備中",cat:"idiom",def:"近い将来に実施される予定で、現在準備・審議が進んでいる状態。",ex:"Several new regulations are in the pipeline for the tech sector."},
+  {w:"at stake",p:"/æt steɪk/",jp:"危機にさらされて・かかっている",cat:"idiom",def:"重要なものが失われるリスクにさらされている状況。",ex:"Millions of jobs are at stake if the trade war escalates further."},
+  {w:"fall short",p:"/fɔːl ʃɔːt/",jp:"及ばない・不十分",cat:"idiom",def:"目標・期待・水準に達しないこと。決算・目標未達ニュースで頻出。",ex:"The company's profits fell short of analyst expectations."},
+  {w:"ramp up",p:"/ræmp ʌp/",jp:"増強する・加速させる",cat:"idiom",def:"生産・活動・努力などを急速に増加・拡大させること。",ex:"Manufacturers are ramping up production to meet soaring demand."},
+  {w:"double down",p:"/ˈdʌbl daʊn/",jp:"姿勢を強化する・倍賭けする",cat:"idiom",def:"困難な状況でもある立場や戦略をより強く推し進めること。",ex:"The president doubled down on his immigration policy despite criticism."},
+  {w:"red flag",p:"/ˈred flæɡ/",jp:"警戒信号・危険の兆候",cat:"idiom",def:"問題や危険の存在を示す警告サイン。",ex:"Auditors identified several red flags in the company's accounts."},
+  {w:"green light",p:"/ˈɡriːn laɪt/",jp:"承認・許可",cat:"idiom",def:"計画・提案などを進めるための許可・承認を与えること。",ex:"The merger received the green light from competition regulators."},
+  {w:"brace for",p:"/breɪs fɔː/",jp:"〜に備える",cat:"idiom",def:"困難や衝撃的な出来事に備えて準備すること。",ex:"Markets are bracing for a wave of corporate earnings results."},
+  {w:"sweeping",p:"/ˈswiːpɪŋ/",jp:"抜本的な・広範な",cat:"idiom",def:"規模が非常に大きく、広範囲に及ぶ変化・措置を表す形容詞。",ex:"The government announced sweeping reforms to the tax system."},
+  {w:"pivot",p:"/ˈpɪvɪt/",jp:"方針転換する",cat:"idiom",def:"企業・政策が戦略を大きく転換すること。スタートアップ用語から一般的になった。",ex:"The Fed pivoted to rate cuts after months of tightening."},
+  {w:"headwinds",p:"/ˈhedwɪndz/",jp:"逆風・障害",cat:"idiom",def:"成長や前進を妨げる困難な条件。反対はtailwinds（追い風）。",ex:"The economy faces significant headwinds from rising energy costs."},
+  {w:"tailwinds",p:"/ˈteɪlwɪndz/",jp:"追い風・好条件",cat:"idiom",def:"成長や進展を後押しする有利な条件。headwindsの反対。",ex:"The sector benefits from strong demographic tailwinds."},
+  {w:"bail out",p:"/beɪl aʊt/",jp:"救済する",cat:"economy",def:"経営破綻しそうな企業・銀行を政府などが資金援助して救うこと。",ex:"The government agreed to bail out the failing airline."},
+  {w:"spin off",p:"/spɪn ɒf/",jp:"分社化する",cat:"business",def:"大企業が事業の一部を独立した会社として切り離すこと。",ex:"The conglomerate plans to spin off its media division next year."},
+];
+
+let filtered = [...ALL];
+let idx = 0;
+let flipped = false;
+let known = new Set();
+let again = new Set();
+let currentFilter = 'all';
+
+const catLabel = c => ({politics:'政治',economy:'経済',business:'ビジネス',society:'社会',idiom:'イディオム'}[c]||c);
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const q = document.querySelector('.search-box').value.toLowerCase().trim();
+  applyFilter(cat, q);
+}
+
+function doSearch(q) {
+  applyFilter(currentFilter, q.toLowerCase().trim());
+}
+
+function applyFilter(cat, q) {
+  filtered = ALL.filter(d =>
+    (cat === 'all' || d.cat === cat) &&
+    (!q || d.w.toLowerCase().includes(q) || d.jp.includes(q) || d.def.includes(q))
+  );
+  idx = 0;
+  render();
+}
+
+function render() {
+  const tot = filtered.length;
+  const cardArea = document.getElementById('card-area');
+  if (!tot) {
+    cardArea.innerHTML = '<div class="empty">該当する単語が見つかりません</div>';
+    document.getElementById('prog-cur').textContent = '0';
+    document.getElementById('prog-tot').textContent = '0';
+    document.getElementById('prog-pct').textContent = '0%';
+    document.getElementById('bar').style.width = '0%';
+    return;
+  }
+
+  if (!document.getElementById('card')) {
+    cardArea.innerHTML = `
+      <div class="card" id="card" onclick="flipCard()">
+        <div class="face" id="front-face"></div>
+        <div class="face back-face" id="back-face"></div>
+      </div>`;
+  }
+
+  const d = filtered[idx];
+  flipped = false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('mark-btns').style.display = 'none';
+
+  document.getElementById('front-face').innerHTML = `
+    <span class="badge cat-${d.cat}">${catLabel(d.cat)}</span>
+    <div class="word-en">${d.w}</div>
+    <div class="word-pron">${d.p}</div>
+    <div class="tap-hint">タップして意味を確認 ↓</div>
+  `;
+  document.getElementById('back-face').innerHTML = `
+    <span class="badge cat-${d.cat}">${catLabel(d.cat)}</span>
+    <div class="back-word">${d.w}</div>
+    <div class="back-pron">${d.p}</div>
+    <div class="back-jp">${d.jp}</div>
+    <div class="back-def">${d.def}</div>
+    <div class="back-ex">${d.ex}</div>
+  `;
+
+  const pct = Math.round((idx+1)/tot*100);
+  document.getElementById('prog-cur').textContent = idx+1;
+  document.getElementById('prog-tot').textContent = tot;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('bar').style.width = pct + '%';
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').disabled = idx === tot-1;
+  updateStats();
+}
+
+function flipCard() {
+  flipped = !flipped;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+  document.getElementById('mark-btns').style.display = flipped ? 'flex' : 'none';
+}
+
+function go(dir) {
+  idx = Math.max(0, Math.min(filtered.length-1, idx+dir));
+  render();
+}
+
+function mark(type) {
+  const word = filtered[idx].w;
+  if (type === 'know') { known.add(word); again.delete(word); }
+  else { again.add(word); known.delete(word); }
+  updateStats();
+  if (idx < filtered.length-1) { idx++; render(); }
+}
+
+function updateStats() {
+  document.getElementById('s-total').textContent = ALL.length;
+  document.getElementById('s-know').textContent = known.size;
+  document.getElementById('s-again').textContent = again.size;
+  document.getElementById('s-left').textContent = ALL.length - known.size - again.size;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') go(1);
+  else if (e.key === 'ArrowLeft') go(-1);
+  else if (e.key === ' ') { e.preventDefault(); flipCard(); }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  render();
+});
+</script>
+</body>
+</html>
